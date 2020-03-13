@@ -2,6 +2,7 @@ import zombiedice
 import zombiedice as zombiedice
 import random
 
+
 class stopAtTwo: # A bot that stops rolling after it has rolled two brains
     def __init__(self, name):
         # All zombies must have a name:
@@ -63,11 +64,46 @@ class twoShotguns:  # A bot that stops rolling after it has rolled two shotguns
                 break
 
 
+class oneToFour:  # A bot that initially decides it’ll roll the dice one to four times, but will stop early if it rolls two shotguns
+    def __init__(self, name):
+        self.name = name
+
+    def turn(self, gameState):
+        diceRollResults = zombiedice.roll()
+
+        roll = [1, 2, 3, 4]
+        rolls = random.choice(roll)
+        shotguns = 0
+        for i in range(rolls):
+            shotguns += diceRollResults['shotgun']
+            if shotguns < 2:
+                diceRollResults = zombiedice.roll()
+            else:
+                break
+
+
+class shotgunBrains:  # A bot that stops rolling after it has rolled more shotguns than brains
+    def __init__(self, name):
+        self.name = name
+
+    def turn(self, gameState):
+        diceRollResults = zombiedice.roll()
+        shotguns = 0
+        brains = 0
+        while diceRollResults is not None:
+            shotguns += diceRollResults['shotgun']
+            brains += diceRollResults['brains']
+            if shotguns <= brains:
+                diceRollResults = zombiedice.roll()
+            else:
+                break
 
 zombies = (
     stopAtTwo(name='Stop at 2 Brains'),
     randomAfterFirst(name='Random Decision'),
-    twoShotguns(name='Stop at 2 Shotguns')
+    twoShotguns(name='Stop at 2 Shotguns'),
+    oneToFour(name='one to four rolls'),
+    shotgunBrains(name='shotgun vs brains')
 )
 
 # Uncomment one of the following lines to run in CLI or Web GUI mode:
